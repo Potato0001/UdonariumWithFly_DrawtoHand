@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BadgeComponent } from 'component/badge/badge.component';
 import { CardStackListComponent } from 'component/card-stack-list/card-stack-list.component';
 import { CardStackComponent } from 'component/card-stack/card-stack.component';
+import { DeckCreatorComponent } from './component/deck-creator/deck-creator.component';
 import { CardComponent } from 'component/card/card.component';
 import { ChatInputComponent } from 'component/chat-input/chat-input.component';
 import { ChatMessageComponent } from 'component/chat-message/chat-message.component';
@@ -136,6 +137,7 @@ import { RangeComponent } from './component/range/range.component';
     BrowserModule,
     BrowserAnimationsModule,
     CommonModule,
+    DeckCreatorComponent,
     FormsModule,
     LinkyModule,
     YouTubePlayerModule,

@@ -5,7 +5,7 @@ import { EventSystem, Network } from '@udonarium/core/system';
 import { PeerContext } from '@udonarium/core/system/network/peer-context';
 import { PeerSessionGrade } from '@udonarium/core/system/network/peer-session-state';
 import { PeerCursor } from '@udonarium/peer-cursor';
-
+import { DeckCreatorComponent } from '../deck-creator/deck-creator.component';
 import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
 import { LobbyComponent } from 'component/lobby/lobby.component';
 import { AppConfig, AppConfigService } from 'service/app-config.service';
@@ -115,6 +115,13 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
         this.ngZone.run(() => { });
       });
     this.interval = setInterval(() => { }, 1000);
+  }
+  
+  openDeckCreator() {
+    this.modalService.open(DeckCreatorComponent, { 
+      width: 650, 
+      height: 550 
+    });
   }
 
   ngOnDestroy() {

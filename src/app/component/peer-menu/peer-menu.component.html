@@ -84,6 +84,12 @@
     </div>
   </div>
 </div>
+<div style="margin-top: 15px; border-top: 1px dashed #555; padding-top: 10px;">
+  <button style="margin-left: 0px; width: 100%; text-align: center; background: #0275d8; color: #fff; padding: 8px 0; font-weight: bold; margin-bottom: 8px;" (click)="openDeckCreator()">
+    <i class="material-icons" style="vertical-align: middle; margin-right: 5px; font-size: 1.2em;">style</i>
+    <span style="vertical-align: middle;">Deck Creator (🃏 製作器)</span>
+  </button>
+</div>
 <div *ngIf="!isGMMode && !isGMHold" style="margin-top: 1px">
   <ng-container *ngIf="!networkService.peer.isRoom && canUsePrivateSession">
     <input [(ngModel)]="targetUserId" placeholder="接続したい相手のID" name="targetUserId" [disabled]="isDisableConnect" />

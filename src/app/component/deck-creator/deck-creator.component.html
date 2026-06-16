@@ -1,0 +1,85 @@
+<div class="deck-creator-container" style="padding: 20px; background: #222; color: #fff; font-family: sans-serif; height: 100%; box-sizing: border-box; overflow-y: auto; position: relative;">
+  <h2 style="margin-top: 0; border-bottom: 2px solid #555; padding-bottom: 8px;">🃏 Room Asset Deck Creator</h2>
+  
+  <div style="margin-bottom: 20px;">
+    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Deck Name:</label>
+    <input type="text" [(ngModel)]="deckName" style="width: 100%; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px;" />
+  </div>
+
+  <div style="margin-bottom: 25px; padding: 15px; background: #2a2a2a; border-radius: 6px; border: 1px solid #ffca28;">
+    <label style="display: block; font-weight: bold; margin-bottom: 10px; color: #ffca28;">🎴 Card Back Selection:</label>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <div (click)="openImagePicker('back')" style="width: 70px; height: 90px; background: #333; border: 2px dashed #888; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative;">
+        <img *ngIf="backIdentifier && getImageById(backIdentifier)" [src]="getImageById(backIdentifier)?.url" style="width: 100%; height: 100%; object-fit: cover;" />
+        <span *ngIf="!backIdentifier" style="font-size: 24px; color: #aaa;">＋</span>
+      </div>
+      <div>
+        <button type="button" (click)="openImagePicker('back')" style="background: #444; color: #fff; border: 1px solid #666; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+          {{ backIdentifier ? 'Change Back Image' : 'Select Back Image...' }}
+        </button>
+        <div style="font-size: 11px; color: #aaa; margin-top: 4px;">{{ getImageById(backIdentifier)?.name || 'No image selected' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <hr style="border: 0; border-top: 1px solid #444; margin: 20px 0;" />
+
+  <h3 style="margin-bottom: 10px; color: #2196f3;">🖼️ Card Fronts Setup</h3>
+  <div *ngFor="let row of cardRows; let i = index" style="display: flex; gap: 15px; align-items: center; margin-bottom: 12px; padding: 10px; background: #2e2e2e; border-radius: 4px;">
+    
+    <div (click)="openImagePicker(i)" style="width: 50px; height: 65px; background: #222; border: 1px dashed #666; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; shrink: 0;">
+      <img *ngIf="row.faceIdentifier && getImageById(row.faceIdentifier)" [src]="getImageById(row.faceIdentifier)?.url" style="width: 100%; height: 100%; object-fit: cover;" />
+      <span *ngIf="!row.faceIdentifier" style="font-size: 18px; color: #888;">＋</span>
+    </div>
+
+    <div style="flex: 2;">
+      <button type="button" (click)="openImagePicker(i)" style="width: 100%; text-align: left; background: #333; color: #ccc; border: 1px solid #555; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 13px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+        {{ getImageById(row.faceIdentifier)?.name || '-- Click to choose card face --' }}
+      </button>
+    </div>
+
+    <div style="width: 70px; shrink: 0;">
+      <input type="number" [(ngModel)]="row.quantity" min="1" title="Quantity" style="width: 100%; padding: 7px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; text-align: center;" />
+    </div>
+
+    <button (click)="removeRow(i)" [disabled]="cardRows.length <= 1" style="background: #d9534f; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">✕</button>
+  </div>
+
+  <button (click)="addRow()" style="background: #5cb85c; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 40px;">
+    ＋ Add Another Card Variant
+  </button>
+
+  <div style="position: sticky; bottom: 0; background: #222; padding: 10px 0; border-top: 1px solid #444; z-index: 10;">
+    <button (click)="generateDeck()" style="width: 100%; background: #0275d8; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;">
+      🚀 Generate and Deal Deck onto Table
+    </button>
+  </div>
+
+  <div *ngIf="showPicker" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 99999;">
+    <div style="background: #2c2c2c; width: 85%; max-width: 500px; height: 75%; border-radius: 8px; display: flex; flex-direction: column; border: 1px solid #555; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+      
+      <div style="padding: 15px; border-bottom: 1px solid #444; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; color: #ffca28;">🖼️ Select Room Image</h3>
+        <button (click)="showPicker = false" style="background: transparent; color: #aaa; border: none; font-size: 20px; cursor: pointer;">✕</button>
+      </div>
+
+      <div style="flex: 1; padding: 15px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 150px)); gap: 12px; justify-content: center; align-content: start; background: #1e1e1e;">
+        <div *ngFor="let img of uploadedImages" (click)="selectImage(img.identifier)" style="background: #2a2a2a; border: 1px solid #444; border-radius: 6px; padding: 6px; cursor: pointer; text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center; transition: transform 0.1s;" onmouseenter="this.style.transform='scale(1.03)'; this.style.borderColor='#2196f3';" onmouseleave="this.style.transform='scale(1)'; this.style.borderColor='#444';">
+          <div style="width: 100%; height: 90px; background: #111; border-radius: 4px; overflow: hidden;">
+            <img [src]="img.url" style="width: 100%; height: 100%; object-fit: contain;" />
+          </div>
+          <div style="font-size: 11px; color: #ccc; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 100%;">
+            {{ img.name }}
+          </div>
+        </div>
+        <div *ngIf="uploadedImages.length === 0" style="grid-column: 1/-1; color: #aaa; text-align: center; margin-top: 40px; font-size: 14px;">
+          No images uploaded in this room yet.<br>Upload images through the main game panel first!
+        </div>
+      </div>
+
+      <div style="padding: 12px; border-top: 1px solid #444; text-align: right; background: #2c2c2c; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+        <button (click)="showPicker = false" style="background: #555; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
