@@ -11,7 +11,7 @@ import {
   OnChanges,
   OnDestroy
 } from '@angular/core';
-import { Card } from '@udonarium/card';
+import { Card, CardState } from '@udonarium/card';
 import { CardStack } from '@udonarium/card-stack';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
@@ -503,6 +503,70 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         default: this.cards.length > 0,
         disabled: this.cards.length == 0
       },
+      { 
+        name: '手札に引く (Draw to Hand)', 
+        action: () => {
+          let card = this.cardStack.drawCard();
+          
+          if (card) {
+            // 1. Assign real peer ID if online, otherwise use our local fallback string
+            let activeUser = (Network.peer && Network.peer.userId) ? Network.peer.userId : 'local-sandbox-host';
+            
+            card.owner = activeUser;
+            card.state = CardState.BACK; // Lock it face down using the native Enum
+      
+            // 2. Set spatial coordinates slightly offset from the deck
+            card.location.name = 'table';
+            card.location.x = this.cardStack.location.x + 32;
+            card.location.y = this.cardStack.location.y + 32;
+            
+            // 3. Update the tabletop map layer
+            card.update();
+          }
+        } 
+      },
+      {
+        name: '手札に何枚か引く', 
+        action: null, // Set to null to signal that this item opens a submenu
+        subActions: [2, 3, 4, 5, 10].map(n => {
+          return {
+            name: `${n}枚`,
+            action: () => {
+              const cards: Card[] = [];
+              
+              for (let i = 0; i < n; i++) {
+                const card = this.cardStack.drawCard();
+                if (card) {
+                  // 1. Establish secure ownership (online peer ID fallback to local host)
+                  let activeUser = (Network.peer && Network.peer.userId) ? Network.peer.userId : 'local-sandbox-host';
+                  card.owner = activeUser;
+                  card.state = CardState.BACK; // Force hidden/face-down
+      
+                  // 2. Cascade placement offsets so cards don't stack directly on top of each other
+                  card.location.name = 'table';
+                  card.location.x = this.cardStack.location.x + 32 + (i * 12); // Steps rightward slightly
+                  card.location.y = this.cardStack.location.y + 32 + (i * 4);  // Steps downward slightly
+                  
+                  card.update();
+                  cards.push(card);
+      
+                  // 3. Play the native card drawing audio clicks rhythmically 
+                  if (i == 0 || i == 3 || i == 9) {
+                    SoundEffect.play(PresetSound.cardDraw);
+                  }
+                }
+              }
+      
+              // 4. Send a clean, anonymous system message to the chat log
+              if (cards.length > 0) {
+                const deckName = this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name;
+                this.chatMessageService.sendOperationLog(`${deckName} から 手札に ${cards.length}枚引いて伏せた`);
+              }
+            }
+          };
+        }),
+        disabled: this.cards.length == 0
+      },
       {
         name: 'カードを引く', action: null,
         subActions: [2, 3, 4, 5, 10].map(n => {
@@ -591,6 +655,26 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
           EventSystem.call('SHUFFLE_CARD_STACK', { identifier: this.cardStack.identifier });
         },
         disabled: this.cards.length == 0
+      },
+      // Inside card-stack.component.ts context menu setup
+      {
+        name: 'Lay out deck ＞',
+        action: null, // Null indicates this is a folder node that expands a sub-menu
+        subActions: [
+          {
+            name: 'Face Up',
+            action: () => this.cardStack.layoutDeck(0, false) // state=0 (face up), onlyMe=false
+          },
+          {
+            name: 'Face Down',
+            action: () => this.cardStack.layoutDeck(1, false) // state=1 (face down), onlyMe=false
+          },
+          {
+            name: 'Only Me (Private)',
+            action: () => this.cardStack.layoutDeck(1, true)  // state=1 (face down), onlyMe=true
+          }
+        ],
+        disabled: this.cardStack.cards.length === 0
       },
       { name: 'カード一覧を見る...', action: () => {
         this.showStackList(this.cardStack);

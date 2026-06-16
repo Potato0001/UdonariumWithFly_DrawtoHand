@@ -64,7 +64,14 @@ export class Card extends TabletopObject {
   
   get hasOwner(): boolean { return 0 < this.owner.length; }
   get ownerIsOnline(): boolean { return this.hasOwner && (this.isHand || Network.peers.some(peer => peer.userId === this.owner && peer.isOpen)); }
-  get isHand(): boolean { return Network.peer.userId === this.owner; }
+  get isHand(): boolean { 
+    // If we are offline/no SkyWay key, Network.peer or its userId might be blank.
+    // We fall back to checking if the card's owner matches our placeholder!
+    if (!Network.peer || !Network.peer.userId) {
+      return this.owner === 'local-sandbox-host';
+    }
+    return Network.peer.userId === this.owner; 
+  }
   get isFront(): boolean { return this.state === CardState.FRONT; }
   get isVisible(): boolean { return this.isHand || this.isFront; }
 
