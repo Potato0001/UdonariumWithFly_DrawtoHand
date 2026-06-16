@@ -1,5 +1,5 @@
 
-# Udonarium With Fly - Draw to Hand & Bulk Deck Creator Edition
+# Udonarium With Fly - DeckMaster Edition
 
 This is a customized, feature-rich fork of **Udonarium**, an 3D web-based tabletop simulator. This version introduces advanced card-handling automation and a powerful bulk deck creation utility directly integrated into the tabletop interface.
 
