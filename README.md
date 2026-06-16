@@ -5,7 +5,7 @@ This is a customized, feature-rich fork of **Udonarium**, an 3D web-based tablet
 
 ## 🌐 Live Demo
 Play the latest version directly in your browser here:  
-👉 **[https://potato0001.github.io/UdonariumWithFly_DrawtoHand/](https://potato0001.github.io/UdonariumWithFly_DrawtoHand/)**
+👉 **https://potato0001.github.io/UdonariumWithFly_DeckMaster/**
 
 ---
 
