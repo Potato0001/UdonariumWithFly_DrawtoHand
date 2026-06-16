@@ -1,6 +1,6 @@
 backend:
   mode: skyway2023 #'skyway2023' or 'skyway'
-  url: https://udonarium-backend.justin331-liao.workers.dev/ #Your Backend API URL
+  url: https://name #Your Backend API URL
 webrtc: #非推奨（旧SkyWay）
   key: aaaaaaaa-bbbb-ccccc-dddd-eeeeeeeeeeee #[deprecated] Your (old) SkyWay API key
 app: #未使用
