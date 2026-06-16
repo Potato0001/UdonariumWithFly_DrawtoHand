@@ -1,10 +1,30 @@
 
-UdonariumWithFly modified to add features, currently with new "Draw to Hand" feature for card deck.
+# Udonarium With Fly - Draw to Hand & Bulk Deck Creator Edition
 
-Page:
-https://potato0001.github.io/UdonariumWithFly_DrawtoHand/
+This is a customized, feature-rich fork of **Udonarium**, an 3D web-based tabletop simulator. This version introduces advanced card-handling automation and a powerful bulk deck creation utility directly integrated into the tabletop interface.
 
-Thanks for the base from original Udonarium by TK11235 and UdonariumWithFly by nanasuana.
+## 🌐 Live Demo
+Play the latest version directly in your browser here:  
+👉 **[https://potato0001.github.io/UdonariumWithFly_DrawtoHand/](https://potato0001.github.io/UdonariumWithFly_DrawtoHand/)**
+
+---
+
+## ✨ New Features in this Fork
+
+### 1. 🃏 "Draw to Hand" Mechanic
+Enhance your card game workflows! Players can now draw cards straight from a tabletop deck directly into their private hand layout with a streamlined context action, bypassing manual dragging and dropping.
+
+### 2. 📁 Bulk Folder Deck Creator (New!)
+Skip the tedious process of uploading cards one by one. Our brand-new **Room Asset Deck Creator** lets you upload entire folders from your local machine instantly.
+* **HTML5 Folder Ingestion:** Uses native directory scanning to queue dozens of images at once.
+* **Individual Quantity Matrix:** Every file imported from your folder initializes with a default quantity of `1`, which you can freely customize to create duplicates before generating the final stack.
+* **Native Factory Alignment:** Leverages Udonarium's core asset tree schemas, ensuring card textures sync seamlessly across all connected peers without rendering blank or invisible cards.
+
+---
+
+This version wouldn't be possible without the incredible open-source foundations laid down by the tabletop community:
+Original Udonarium v1.x.x Architecture: Deepest gratitude to TK11235 for creating the magnificent, highly-synchronized core engine.
+UdonariumWithFly Features: Thanks to nanasuana for the excellent fly/height control mechanics that expanded what's possible on the digital grid.
 
 [ユドナリウム（Udonarium）](https://github.com/TK11235/udonarium)の私家改造版、高度とかチャットテキストの色とか立ち絵（ユドナリウムだとキャラクターの画像と紛らわしいのでスタンドと呼称）とか。
 
