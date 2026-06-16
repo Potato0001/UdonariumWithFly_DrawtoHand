@@ -1,7 +1,0 @@
-backend:
-  mode: skyway2023 #'skyway2023' or 'skyway'
-  url: https://udonarium-backend.justin331-liao.workers.dev/
-
-app: #未使用
-dice:
-  url: 
