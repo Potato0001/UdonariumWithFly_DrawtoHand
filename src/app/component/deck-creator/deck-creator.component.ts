@@ -2,16 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-// Scoped package engine dependencies
+// Core Udonarium framework dependencies
 import { CardStack } from '@udonarium/card-stack';
 import { Card } from '@udonarium/card';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 import { EventSystem } from '@udonarium/core/system/event/event-system';
-
-// Exact import path for ObjectStore in your architecture
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 
-// UI architecture service dependency
+// UI Service dependency
 import { ModalService } from '../../service/modal.service';
 
 interface DeckRow {
@@ -27,11 +25,11 @@ interface DeckRow {
   styleUrls: []
 })
 export class DeckCreatorComponent implements OnInit {
-  public deckName: string = 'Custom Folder Deck';
+  public deckName: string = 'Custom Card Deck';
   public backIdentifier: string = '';
   public cardRows: DeckRow[] = [{ faceIdentifier: '', quantity: 1 }];
 
-  // State managers for visual image selection popups
+  // Picker modal and pipeline tracking states
   public showPicker: boolean = false;
   public pickerTarget: 'back' | number = 'back';
   public isProcessingFolder: boolean = false;
@@ -44,6 +42,7 @@ export class DeckCreatorComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  // Manual configuration controls
   public addRow(): void {
     this.cardRows.push({ faceIdentifier: '', quantity: 1 });
   }
@@ -51,6 +50,9 @@ export class DeckCreatorComponent implements OnInit {
   public removeRow(index: number): void {
     if (this.cardRows.length > 1) {
       this.cardRows.splice(index, 1);
+    } else {
+      // If it's the last row, reset it instead of deleting the input field completely
+      this.cardRows = [{ faceIdentifier: '', quantity: 1 }];
     }
   }
 
@@ -58,6 +60,7 @@ export class DeckCreatorComponent implements OnInit {
     return this.uploadedImages.find(img => img.identifier === id);
   }
 
+  // Opens the visual engine asset inventory dialog
   public openImagePicker(target: 'back' | number): void {
     this.pickerTarget = target;
     this.showPicker = true;
@@ -72,12 +75,11 @@ export class DeckCreatorComponent implements OnInit {
     this.showPicker = false;
   }
 
-  // NEW: Handles picking a whole folder from your local machine
+  // HTML5 directory upload logic
   public async onFolderSelected(event: any): Promise<void> {
     const files: FileList = event.target.files;
     if (!files || files.length === 0) return;
 
-    // Filter down to only image files (.png, .jpg, .jpeg, .webp, etc)
     const imageFiles = Array.from(files).filter(file => 
       file.type.startsWith('image/') || 
       /\.(png|jpe?g|webp|gif)$/i.test(file.name)
@@ -90,51 +92,54 @@ export class DeckCreatorComponent implements OnInit {
 
     this.isProcessingFolder = true;
     
-    // Auto-detect a deck name from the parent folder name if available
     if (imageFiles[0].webkitRelativePath) {
       const folderName = imageFiles[0].webkitRelativePath.split('/')[0];
       if (folderName) this.deckName = folderName;
     }
 
-    // Clear existing setup rows to make space for the bulk folder dump
+    // Overwrite baseline structure with bulk folder contents
     this.cardRows = [];
 
     try {
       for (const file of imageFiles) {
-        // Core pipeline registration: Ingest file into Udonarium's cache structure
         const registeredImage = await ImageStorage.instance.addAsync(file);
         if (registeredImage && registeredImage.identifier) {
-          // Push directly into our card configurations matrix
           this.cardRows.push({
             faceIdentifier: registeredImage.identifier,
-            quantity: 1
+            quantity: 1 // Default quantity remains 1 for folder imports
           });
         }
       }
-      alert(`Successfully imported ${this.cardRows.length} image files from folder into the template rows below!`);
     } catch (error) {
-      console.error('Error importing directory contents:', error);
-      alert('An error occurred while uploading some files from the directory.');
+      console.error('Error uploading folder elements:', error);
+      alert('An error occurred while uploading folder files.');
     } finally {
       this.isProcessingFolder = false;
-      // Reset file input target so the same folder can be re-selected if needed
-      event.target.value = '';
+      event.target.value = ''; // Clean input element stream
     }
   }
 
+  // Native deck production generation script
   public async generateDeck(): Promise<void> {
     if (!this.backIdentifier) {
       alert('Please select a Card Back image from the asset room!');
       return;
     }
 
-    const filledRows = this.cardRows.filter(row => row.faceIdentifier.trim() !== '');
-    if (filledRows.length === 0) {
-      alert('Please assign or upload at least one Card Front image!');
+    if (this.cardRows.length === 0) {
+      alert('Your layout structure is empty! Click "Add Single Card" or load a folder.');
       return;
     }
 
-    // Use native factory creator pattern inspired by createTramp
+    // Strict safety check: Ensure manual additions or imports aren't left unassigned
+    for (let i = 0; i < this.cardRows.length; i++) {
+      if (!this.cardRows[i].faceIdentifier || this.cardRows[i].faceIdentifier.trim() === '') {
+        alert(`Row #${i + 1} is missing a Card Face image! Please assign an image asset to it or remove the row before generating.`);
+        return;
+      }
+    }
+
+    // Initialize Card Stack matching native createTramp factory architecture
     const cardStack = CardStack.create(this.deckName);
     cardStack.location.name = 'table';
     cardStack.location.x = 450;
@@ -144,12 +149,12 @@ export class DeckCreatorComponent implements OnInit {
 
     let totalCardsCreated = 0;
 
-    for (const row of filledRows) {
+    for (const row of this.cardRows) {
       for (let i = 0; i < row.quantity; i++) {
         const cardName = `${this.deckName}_Card_${totalCardsCreated + 1}`;
         const card = Card.create(cardName, row.faceIdentifier, this.backIdentifier);
         
-        card.state = 1; // Face down inside the stack pile
+        card.state = 1; // Deployed Face down inside stack
         card.location.name = 'table';
 
         ObjectStore.instance.add(card);
@@ -162,7 +167,7 @@ export class DeckCreatorComponent implements OnInit {
     cardStack.update();
     EventSystem.call('SELECT_TABLETOP_OBJECT', { identifier: cardStack.identifier });
     
-    alert(`Success! Generated "${this.deckName}" with ${totalCardsCreated} cards on the table.`);
+    alert(`Success! Generated "${this.deckName}" with ${totalCardsCreated} cards on the tabletop.`);
     this.modalService.resolve();
   }
 }

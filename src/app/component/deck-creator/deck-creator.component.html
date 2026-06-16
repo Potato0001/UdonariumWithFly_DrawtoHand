@@ -1,5 +1,5 @@
 <div class="deck-creator-container" style="padding: 20px; background: #222; color: #fff; font-family: sans-serif; height: 100%; box-sizing: border-box; overflow-y: auto; position: relative;">
-  <h2 style="margin-top: 0; border-bottom: 2px solid #555; padding-bottom: 8px;">🃏 Room Asset Deck Creator</h2>
+  <h2 style="margin-top: 0; border-bottom: 2px solid #555; padding-bottom: 8px;">🃏 Udonarium DeckCraft Engine</h2>
   
   <div style="margin-bottom: 20px;">
     <label style="display: block; font-weight: bold; margin-bottom: 5px;">Deck Name:</label>
@@ -17,7 +17,7 @@
         <button type="button" (click)="openImagePicker('back')" style="background: #444; color: #fff; border: 1px solid #666; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
           {{ backIdentifier ? 'Change Back Image' : 'Select Back Image...' }}
         </button>
-        <div style="font-size: 11px; color: #aaa; margin-top: 4px;">{{ getImageById(backIdentifier)?.name || 'No image selected' }}</div>
+        <div style="font-size: 11px; color: #aaa; margin-top: 4px;">{{ getImageById(backIdentifier)?.name || 'No back asset locked' }}</div>
       </div>
     </div>
   </div>
@@ -26,16 +26,16 @@
 
   <div style="margin-bottom: 25px; padding: 15px; background: #1a237e; border-radius: 6px; border: 1px solid #2196f3;">
     <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #bbdefb;">📁 Bulk Import Local Folder:</label>
-    <p style="margin: 0 0 12px 0; font-size: 12px; color: #e0e0e0;">Select a directory folder on your computer. All image files inside will automatically be added as rows!</p>
+    <p style="margin: 0 0 12px 0; font-size: 12px; color: #e0e0e0;">Select a card graphics folder. All recognized images will automatically populate into the matrix rows below with an editable quantity.</p>
     
     <label style="display: inline-block; background: #2196f3; color: white; padding: 10px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
       <span *ngIf="!isProcessingFolder">⚡ Select & Upload Folder</span>
-      <span *ngIf="isProcessingFolder">⏳ Processing & Syncing Images...</span>
+      <span *ngIf="isProcessingFolder">⏳ Registering Directory Buffers...</span>
       <input type="file" webkitdirectory directory multiple (change)="onFolderSelected($event)" [disabled]="isProcessingFolder" style="display: none;" />
     </label>
   </div>
 
-  <h3 style="margin-bottom: 10px; color: #2196f3;">🖼️ Card Fronts Setup ({{ cardRows.length }} Variants)</h3>
+  <h3 style="margin-bottom: 10px; color: #2196f3;">🖼️ Card Fronts Grid Config ({{ cardRows.length }} Variations)</h3>
   <div *ngFor="let row of cardRows; let i = index" style="display: flex; gap: 15px; align-items: center; margin-bottom: 12px; padding: 10px; background: #2e2e2e; border-radius: 4px;">
     
     <div (click)="openImagePicker(i)" style="width: 50px; height: 65px; background: #222; border: 1px dashed #666; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; shrink: 0;">
@@ -45,18 +45,19 @@
 
     <div style="flex: 2;">
       <button type="button" (click)="openImagePicker(i)" style="width: 100%; text-align: left; background: #333; color: #ccc; border: 1px solid #555; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 13px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
-        {{ getImageById(row.faceIdentifier)?.name || '-- Click to choose card face --' }}
+        {{ getImageById(row.faceIdentifier)?.name || '-- Click to assign image profile --' }}
       </button>
     </div>
 
-    <div style="width: 70px; shrink: 0;">
-      <input type="number" [(ngModel)]="row.quantity" min="1" title="Quantity" style="width: 100%; padding: 7px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; text-align: center;" />
+    <div style="width: 80px; shrink: 0; display: flex; flex-direction: column; gap: 2px;">
+      <span style="font-size: 10px; color: #aaa; text-align: center;">Quantity</span>
+      <input type="number" [(ngModel)]="row.quantity" min="1" style="width: 100%; padding: 6px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; text-align: center;" />
     </div>
 
-    <button (click)="removeRow(i)" style="background: #d9534f; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">✕</button>
+    <button (click)="removeRow(i)" style="background: #d9534f; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 14px;">✕</button>
   </div>
 
-  <button (click)="addRow()" style="background: #5cb85c; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 40px;">
+  <button (click)="addRow()" style="background: #5cb85c; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 50px;">
     ＋ Add Single Card Variant
   </button>
 
@@ -73,7 +74,7 @@
         <button (click)="showPicker = false" style="background: transparent; color: #aaa; border: none; font-size: 20px; cursor: pointer;">✕</button>
       </div>
       <div style="flex: 1; padding: 15px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 150px)); gap: 12px; justify-content: center; align-content: start; background: #1e1e1e;">
-        <div *ngFor="let img of uploadedImages" (click Pis)="selectImage(img.identifier)" (click)="selectImage(img.identifier)" style="background: #2a2a2a; border: 1px solid #444; border-radius: 6px; padding: 6px; cursor: pointer; text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center;">
+        <div *ngFor="let img of uploadedImages" (click)="selectImage(img.identifier)" style="background: #2a2a2a; border: 1px solid #444; border-radius: 6px; padding: 6px; cursor: pointer; text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center;">
           <div style="width: 100%; height: 90px; background: #111; border-radius: 4px; overflow: hidden;">
             <img [src]="img.url" style="width: 100%; height: 100%; object-fit: contain;" />
           </div>
