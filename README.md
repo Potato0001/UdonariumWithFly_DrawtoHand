@@ -24,7 +24,7 @@ Skip the tedious process of uploading cards one by one. Our brand-new **Room Ass
 
 This version wouldn't be possible without the incredible open-source foundations laid down by the tabletop community:
 Original Udonarium v1.x.x Architecture: Deepest gratitude to TK11235 for creating the magnificent, highly-synchronized core engine.
-UdonariumWithFly Features: Thanks to nanasuana for the excellent fly/height control mechanics that expanded what's possible on the digital grid.
+UdonariumWithFly Features: Thanks to nanasunana for the excellent fly/height control mechanics that expanded what's possible on the digital grid.
 
 [ユドナリウム（Udonarium）](https://github.com/TK11235/udonarium)の私家改造版、高度とかチャットテキストの色とか立ち絵（ユドナリウムだとキャラクターの画像と紛らわしいのでスタンドと呼称）とか。
 
